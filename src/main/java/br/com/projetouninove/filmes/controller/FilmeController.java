@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,15 @@ public class FilmeController {
 
     @GetMapping
     public List<Filme> listar() {
-        return filmeRepository.listar();
+        return filmeRepository.findAll();
     }
 
     @GetMapping("/{filmeId}")
     public ResponseEntity<Filme> buscar(@PathVariable Long filmeId) {
-        Filme filme = filmeRepository.buscar(filmeId);
+        Optional<Filme> filme = filmeRepository.findById(filmeId);
 
-        if (filme != null) {
-            return ResponseEntity.ok(filme);
+        if (filme.isPresent()) {
+            return ResponseEntity.ok(filme.get());
         }
 
         return ResponseEntity.notFound().build();
@@ -68,13 +69,13 @@ public class FilmeController {
     public ResponseEntity<?> atualizar(@PathVariable Long filmeId,
             @RequestBody Filme filme) {
         try {
-            Filme filmeAtual = filmeRepository.buscar(filmeId);
+            Optional<Filme> filmeAtual = filmeRepository.findById(filmeId);
 
-            if (filmeAtual != null) {
-                BeanUtils.copyProperties(filme, filmeAtual, "id");
+            if (filmeAtual.isPresent()) {
+                BeanUtils.copyProperties(filme, filmeAtual.get(), "id");
 
-                filmeAtual = cadastroFilme.salvar(filmeAtual);
-                return ResponseEntity.ok(filmeAtual);
+                Filme filmeSalvo = cadastroFilme.salvar(filmeAtual.get());
+                return ResponseEntity.ok(filmeSalvo);
             }
 
             return ResponseEntity.notFound().build();
@@ -88,13 +89,13 @@ public class FilmeController {
     @PatchMapping("/{filmeId}")
     public ResponseEntity<?> atualizarParcial(@PathVariable Long filmeId,
             @RequestBody Map<String, Object> campos) {
-        Filme filmeAtual = filmeRepository.buscar(filmeId);
+        Optional<Filme> filmeAtual = filmeRepository.findById(filmeId);
 
-        if (filmeAtual == null) {
+        if (filmeAtual.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        merge(campos, filmeAtual);
-        return atualizar(filmeId, filmeAtual);
+        merge(campos, filmeAtual.get());
+        return atualizar(filmeId, filmeAtual.get());
 
     }
         @DeleteMapping("/{filmeId}")

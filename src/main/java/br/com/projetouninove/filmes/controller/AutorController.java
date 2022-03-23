@@ -10,6 +10,7 @@ import br.com.projetouninove.filmes.exception.EntidadeNaoEncontradaException;
 import br.com.projetouninove.filmes.repository.AutorRepository;
 import br.com.projetouninove.filmes.service.AutorService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,15 +40,15 @@ public class AutorController {
 
     @GetMapping
     public List<Autor> listar() {
-        return autorRepository.listar();
+        return autorRepository.findAll();
     }
 
     @GetMapping("/{autorId}")
     public ResponseEntity<Autor> buscar(@PathVariable Long autorId) {
-        Autor autor = autorRepository.buscar(autorId);
+        Optional<Autor> autor = autorRepository.findById(autorId);
 
-        if (autor != null) {
-            return ResponseEntity.ok(autor);
+        if (autor.isPresent()) {
+            return ResponseEntity.ok(autor.get());
         }
 
         return ResponseEntity.notFound().build();
@@ -62,13 +63,13 @@ public class AutorController {
     @PutMapping("/{autorId}")
     public ResponseEntity<Autor> atualizar(@PathVariable Long autorId,
             @RequestBody Autor autor) {
-        Autor autorAtual = autorRepository.buscar(autorId);
+        Optional<Autor> autorAtual = autorRepository.findById(autorId);
 
-        if (autorAtual != null) {
-            BeanUtils.copyProperties(autor, autorAtual, "id");
+        if (autorAtual.isPresent()) {
+            BeanUtils.copyProperties(autor, autorAtual.get(), "id");
 
-            autorAtual = cadastroAutor.salvar(autorAtual);
-            return ResponseEntity.ok(autorAtual);
+            Autor autorSalvo = cadastroAutor.salvar(autorAtual.get());
+            return ResponseEntity.ok(autorSalvo);
         }
 
         return ResponseEntity.notFound().build();

@@ -23,12 +23,12 @@ public class AutorService {
     private AutorRepository autorRepository;
 
     public Autor salvar(Autor autor) {
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 
     public void excluir(Long id) {
         try {
-            autorRepository.remover(id);
+            autorRepository.deleteById(id);
         } catch (InvalidDataAccessApiUsageException e) {
             throw new EntidadeNaoEncontradaException(
                     String.format("Autor de código %d não existe", id));

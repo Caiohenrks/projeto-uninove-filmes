@@ -5,16 +5,14 @@
 package br.com.projetouninove.filmes.repository;
 
 import br.com.projetouninove.filmes.domain.Autor;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Caioh
  */
-public interface AutorRepository {
+@Repository
+public interface AutorRepository extends JpaRepository<Autor, Long>{
     
-    List<Autor> listar();
-    Autor buscar(Long id);
-    Autor salvar(Autor autor);
-    void remover(Long id);
 }

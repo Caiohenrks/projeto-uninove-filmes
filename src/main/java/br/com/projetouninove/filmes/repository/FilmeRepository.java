@@ -6,15 +6,14 @@ package br.com.projetouninove.filmes.repository;
 
 import br.com.projetouninove.filmes.domain.Filme;
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Caioh
  */
-public interface FilmeRepository {
-    
-    List<Filme> listar();
-    Filme buscar(Long id);
-    Filme salvar(Filme filme);
-    void remover(Long id);
+@Repository
+public interface FilmeRepository extends JpaRepository<Filme, Long>{
+
 }
